@@ -35,7 +35,7 @@ int Handler::send_connect_request(int sfd, const DataTransfer::MessageModel&) {
   this->current_state = CONNECT_STATE::conn_request;
   DataTransfer::ConnectRequest cR{"127.0.0.1"};
   string to_send = cR.to_str();
-  Debug().info("Here is it");
+  debug_i_console("Here is it");
   try {
     int error_code;
     socklen_t error_code_size = sizeof(error_code);
@@ -45,7 +45,7 @@ int Handler::send_connect_request(int sfd, const DataTransfer::MessageModel&) {
       fprintf(stderr, "socket error: %s\n", strerror(error_code));
     }
     int res = send(sfd, (char*)to_send.c_str(), to_send.length(), NULL);
-    Debug().info("result :", res);
+    debug_i_console("result :", res);
     return res;
 
   } catch (...) {
@@ -55,7 +55,7 @@ int Handler::send_connect_request(int sfd, const DataTransfer::MessageModel&) {
 }
 
 int Handler::on_connect_accept_recieved(int sfd, const DataTransfer::MessageModel& message) {
-  Debug().info("in on_connect_accept_recieved");
+  debug_i_console("in on_connect_accept_recieved");
   /*
   Recieve RSA public key from server, cipher by it aes token and send
   ecncrypted token to server
@@ -72,8 +72,8 @@ int Handler::on_login_accept_recieved(int sfd,
 
 int Handler::send_connect_command(int sfd,
                                   const DataTransfer::MessageModel& message) {
-  Debug().info("In send_connect_command");
-  Debug().info("Message recieved  : ", message.to_str());
+  debug_i_console("In send_connect_command");
+  debug_i_console("Message recieved  : ", message.to_str());
 
   auto utoken = message.get<string>("unique_token");
   cP.set_unique_token(utoken);
@@ -96,10 +96,10 @@ int Handler::on_connect_verify_recieved(
     int sfd, const DataTransfer::MessageModel& message) {
   std::string token_fetched = message.get<std::string>("unique_token");
   if (!cP.get_unique_token().compare(token_fetched)) {
-    Debug().info("CONNECTION VERIFIED");
+    debug_i_console("CONNECTION VERIFIED");
     this->current_state = CONNECT_STATE::conn_verify;
   } else {
-    Debug().fatal("Tokens do not match");
+    debug_f_console("Tokens do not match");
   }
 
   return 0;
@@ -120,13 +120,13 @@ int Handler::on_broadcast_message_recieved(
   auto trig_token = message.get<std::string>("trg_token");
   auto room_id = message.get<std::string>("room_id");
   auto trig_nickname = message.get<std::string>("name");
-  Debug().raw(trig_nickname, " : ", only_message);
+  debug_r_console(trig_nickname, " : ", only_message);
   return 0;
 }
 
 int Handler::on_chatroom_create_verified(int sfd, const DataTransfer::MessageModel& message)
 {
-  Debug().info ("Chatroom created successfully");
+  debug_i_console("Chatroom created successfully");
   ChatRoom new_room(cP);
   if (!message.get<std::string>("owner_id").compare(cP.get_unique_token()))
   {
@@ -134,7 +134,7 @@ int Handler::on_chatroom_create_verified(int sfd, const DataTransfer::MessageMod
     cP.register_master_chatroom(new_room.get_room_id(), new_room);
   } else {
     //this case normally wont be executed
-    Debug().info("Master id does not match ");
+    debug_i_console("Master id does not match ");
     return 0;
   }
 
@@ -177,7 +177,7 @@ ClientPrototype const* Handler::get_client_prototype_ptr_c(void) const {
 decltype(&Client::Handler::send_connect_request) Handler::get_command(
     std::string command) {
   try {
-    Debug().info("SIZE : ", commap.size());
+    debug_i_console("SIZE : ", commap.size());
     return commap.at(command);
   } catch (const std::exception& e) {
     std::cerr << e.what() << '\n';
@@ -202,7 +202,7 @@ std::string Handler::get_input_command(std::vector<std::string> com_buffer){
   } 
   catch (const std::exception& ex)
   {
-    Debug().fatal("No Key code found", ex.what());
+    debug_f_console("No Key code found", ex.what());
     return "NULL";
   }
   

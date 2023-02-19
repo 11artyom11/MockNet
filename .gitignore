@@ -9,7 +9,7 @@ lib/src/helpers/*.so*
 *.key
 html/
 latex/
-3rdparty/json/**
+**/3rdparty/**
 
 **/CMakeFiles/*
 **/*.cmake
@@ -28,4 +28,5 @@ latex/
 **/Makefile
 **/atasm-build.json
 **/.vscode/*
+**/_deps/**
 

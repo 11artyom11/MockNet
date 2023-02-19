@@ -31,7 +31,7 @@ Server::ServerModel::ServerModel(uint32_t port)
       listen_ip{INADDR_ANY}
 
 {
-  Debug().info("Constructed ServerModel instance");
+  debug_i_console("Constructed ServerModel instance");
   server_addr = std::make_unique<struct sockaddr_in>();
   server_addr->sin_port = htons(listen_port);
   server_addr->sin_family = protocol_family;
@@ -46,7 +46,7 @@ Server::ServerModel::ServerModel(uint32_t port)
  * @return true if succeed to set listen port else false
  */
 bool Server::ServerModel::set_server_port(uint16_t port) {
-  Debug().info("Server port set to ", port);
+  debug_i_console("Server port set to ", port);
   std::string debugMes = "Set server port to " + (port + '0');
   server_addr->sin_port = htons(port);
   // Debug() << std::string{debugMes};
@@ -62,7 +62,7 @@ bool Server::ServerModel::set_server_port(uint16_t port) {
  * @return false if failed to set protocol family
  */
 bool Server::ServerModel::set_protocol_family(uint16_t family) {
-  Debug().info("Server protocol family set to ", family);
+  debug_i_console("Server protocol family set to ", family);
   std::string debugMes = "Set protocol family to " + (family + '0');
   // Debug() << std::string{debugMes};
   server_addr->sin_family = family;
@@ -80,7 +80,7 @@ bool Server::ServerModel::set_protocol_family(uint16_t family) {
  * @return false if failed to set listen ip
  */
 bool Server::ServerModel::set_listen_ip(in_addr_t ip) {
-  Debug().info("Server listen ip set to ", ip);
+  debug_i_console("Server listen ip set to ", ip);
   std::string debugMes = "Set listen ip to " + (ip + '0');
   // Debug() << std::string{debugMes};
   server_addr->sin_addr.s_addr = htons(ip);
@@ -137,9 +137,9 @@ int Server::ServerModel::accept_connection_from_socket(int sockfd) {
  *
  */
 void Server::ServerModel::dump_server_state(void) const noexcept {
-  Debug().info("Server listen address : ", server_addr->sin_addr.s_addr);
-  Debug().info("Server listen port : ", server_addr->sin_port, "(", listen_port,")");
-  Debug().info("Server protocol family : ", server_addr->sin_family);
+  debug_i_console("Server listen address : ", server_addr->sin_addr.s_addr);
+  debug_i_console("Server listen port : ", server_addr->sin_port, "(", listen_port,")");
+  debug_i_console("Server protocol family : ", server_addr->sin_family);
   return;
 }
 
@@ -166,7 +166,7 @@ int Server::ServerModel::distribute_incoming_connections(int socket,
   MessageModel message(std::string{response});
   std::string response_s = message.get<std::string>("command");
   auto mem_function = (*m_handler.get()).get_command(response_s);
-  Debug().warning((mem_function ? "IS VALID FUNCTION" : "FUNCTION IS INVALID"));
+  //debug_w_console((mem_function ? "IS VALID FUNCTION" : "FUNCTION IS INVALID"));
   if (!mem_function) {
     return UNKNOWN_COMMAND_ERROR;
   }
@@ -185,8 +185,7 @@ int Server::ServerModel::distribute_incoming_connections(int socket,
  */
 void Server::ServerModel::handle_connection(int connection) {
   if (connection < 0) {
-    Debug().fatal("Failed to grab connection. errno: ", errno,
-                  ", terminating...");
+    //debug_f_console("Failed to grab connection. errno: ", errno, ", terminating...");
     exit(EXIT_FAILURE);
   }
 
@@ -197,8 +196,8 @@ void Server::ServerModel::handle_connection(int connection) {
   do {
     bytes = read(connection, buffer, sizeof(buffer) - 1);
     buffer[bytes] = 0x00;
-    Debug().info("Recieved message : ", buffer);
-    Debug().info ("Received message len : ", bytes);
+    debug_i_console("Recieved message : ", buffer);
+    //debug_i_console("Received message len : ", bytes);
     if (bytes < 0)
     {
       continue;
@@ -219,7 +218,7 @@ void Server::ServerModel::handle_connection(int connection) {
  *
  */
 Server::ServerModel::~ServerModel() {
-  Debug().info("Destructed Server Model object");
+  debug_i_console("Destructed Server Model object");
 }
 
 /**

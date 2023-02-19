@@ -85,7 +85,7 @@ bool DataTransfer::is_message_initial_data_valid(
           (void)data.at(c_key);
 
         } catch (const std::exception& e) {
-          Debug().fatal("CAUGHT ERROR : ", INVALID_INITIAL_MESSAGE_DATA);
+          //debug_f_console("CAUGHT ERROR : ", INVALID_INITIAL_MESSAGE_DATA);
           return false;
         }
       }
@@ -96,7 +96,7 @@ bool DataTransfer::is_message_initial_data_valid(
         try {
           (void)data.at(c_key);
         } catch (const std::exception& e) {
-          Debug().fatal("CAUGHT ERROR : ", INVALID_INITIAL_MESSAGE_DATA);
+          //debug_f_console("CAUGHT ERROR : ", INVALID_INITIAL_MESSAGE_DATA);
           return false;
         }
       }
@@ -119,15 +119,14 @@ bool DataTransfer::is_message_valid(MessageModel& mModel) {
   try {
     std::string command = mModel.get<std::string>("command");
     bool is_command_valid = false;
-    Debug().info(std::find(COMMAND_LIST.begin(), COMMAND_LIST.end(), command) !=
-                 COMMAND_LIST.end());
+    debug_i_console(std::find(COMMAND_LIST.begin(), COMMAND_LIST.end(), command) != COMMAND_LIST.end());
     return std::find(COMMAND_LIST.begin(), COMMAND_LIST.end(), command) !=
            COMMAND_LIST.end();
 
   } catch (const std::exception& e) {
-    Debug().fatal(e.what());
-    Debug().fatal("Thrown INVALID_INITIAL_MESSAGE_DATA exception");
-    Debug().fatal("message_resolver.cpp :151");
+    //debug_f_console(e.what());
+    //debug_f_console("Thrown INVALID_INITIAL_MESSAGE_DATA exception");
+    //debug_f_console("message_resolver.cpp :151");
     return false;
   }
 }

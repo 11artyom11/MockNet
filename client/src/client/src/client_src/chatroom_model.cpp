@@ -81,19 +81,19 @@ int ChatRoom::broadcast_to_all_users(const std::string& utoken,
  *
  */
 void ChatRoom::dump_state(void) const noexcept {
-  Debug().raw("+=========+===================+");
-  Debug().raw("|   Room ID    | ", room_id, " |");
-  Debug().raw("+==============+==============+");
-  Debug().raw("|   Master     | ", master_client->get_unique_token(), " |");
-  Debug().raw("+==============+==============+");
+  debug_r_console("+=========+===================+");
+  debug_r_console("|   Room ID    | ", room_id, " |");
+  debug_r_console("+==============+==============+");
+  debug_r_console("|   Master     | ", master_client->get_unique_token(), " |");
+  debug_r_console("+==============+==============+");
   int idx = 0;
   for (const auto& sec_client : secondary_clients) {
-    Debug().raw("| Client ", idx++, " | ", sec_client->get_unique_token(),
+    debug_r_console("| Client ", idx++, " | ", sec_client->get_unique_token(),
                 " |");
-    Debug().raw("+--------------+--------------+");
+    debug_r_console("+--------------+--------------+");
   }
-  Debug().raw("| Whole Client Count : ", idx + 1, " |");
-  Debug().raw("+--------------+--------------+");
+  debug_r_console("| Whole Client Count : ", idx + 1, " |");
+  debug_r_console("+--------------+--------------+");
 }
 
 /**

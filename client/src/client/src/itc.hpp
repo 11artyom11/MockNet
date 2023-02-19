@@ -79,7 +79,7 @@ class ITC
                     sread_from_stream();
                 } 
             } else {
-                Debug().fatal ("trigger and/or callback is not set for ITC instance...");   
+                debug_f_console("trigger and/or callback is not set for ITC instance...");   
                 return;
             }
         }

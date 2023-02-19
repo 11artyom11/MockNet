@@ -46,7 +46,7 @@ BasicCommunicationModel::~BasicCommunicationModel() {}
 void BasicCommunicationModel::start_read_async(int sockfd) {
   /*Here must be set message resolver to resolve inputted data*/
 
-  Debug().info("Called BasicCommunicationModel::start_read_async(..)");
+  debug_i_console("Called BasicCommunicationModel::start_read_async(..)");
   /*function which is called to forkk another thread in order to
       support async read model and not to mess with write model*/
 
@@ -64,7 +64,7 @@ void BasicCommunicationModel::start_read_async(int sockfd) {
 
     int read_result = read(sockfd, buff, sizeof(buff));
     if (read_result == 0) {
-      Debug().fatal("Host is no longer available. Terminating...");
+      debug_f_console("Host is no longer available. Terminating...");
       return;
     }
     /*Start new thread to print retrieved buffer*/
@@ -74,7 +74,7 @@ void BasicCommunicationModel::start_read_async(int sockfd) {
   }
 
   /*Async-ly start read lambda (see :43) */
-  Debug().info("Ended BasicCommunicationModel::start_read_async(..)");
+  debug_i_console("Ended BasicCommunicationModel::start_read_async(..)");
 }
 
 IOModel_shrd_ptr BasicCommunicationModel::get_io_model(void) const {
@@ -97,7 +97,7 @@ void BasicCommunicationModel::start_write_async(int sockfd, std::istream& is) {
     is >> buf_s;
     DataTransfer::MessageModel model(buf_s);
     if (!DataTransfer::is_message_valid(model)) {
-      Debug().fatal("Bad Message");
+      debug_f_console("Bad Message");
       continue;
     }
     m_io_model->send_message(model, sockfd);

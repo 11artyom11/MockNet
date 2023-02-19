@@ -19,9 +19,9 @@ void IOModel::send_message(const DataTransfer::MessageModel& message, int sfd) {
   char* message_c = (char*)malloc(len);
   memcpy(message_c, message.to_str().c_str(), len);
   message_c[len] = '\0';
-  Debug().info("To send: ", message_c);
+  debug_i_console("To send: ", message_c);
   int res = send(sfd, message_c, strlen(message_c), NULL);
-  Debug().info("RESULT OF SEND : ", res);
+  debug_i_console("RESULT OF SEND : ", res);
   return;
 }
 

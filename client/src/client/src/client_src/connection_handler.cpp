@@ -11,7 +11,7 @@ using namespace Net;
  *
  */
 BasicConnectionHandler::BasicConnectionHandler() {
-  Debug().info("Created BasicConnectionHandler object at ", this);
+  debug_i_console("Created BasicConnectionHandler object at ", this);
   this->server_addr = std::make_unique<struct sockaddr_in>();
 }
 
@@ -21,7 +21,7 @@ BasicConnectionHandler::BasicConnectionHandler() {
  *
  */
 BasicConnectionHandler::~BasicConnectionHandler() {
-  Debug().info("Destructed BasicConnectionHandler object at  ", this);
+  debug_i_console("Destructed BasicConnectionHandler object at  ", this);
 }
 
 /**
@@ -55,7 +55,7 @@ struct sockaddr_in* BasicConnectionHandler::get_sockaddr(void) const noexcept {
  */
 bool BasicConnectionHandler::setup_socket(int __domain, int __type,
                                           int __protocol) {
-  Debug().info("Called BasicConnectionHandler::setup_socket(...) function");
+  debug_i_console("Called BasicConnectionHandler::setup_socket(...) function");
   m_connection = socket(__domain, __type, __protocol);
   return (m_connection == -1 ? false : true);
 }
@@ -70,11 +70,11 @@ bool BasicConnectionHandler::setup_socket(int __domain, int __type,
  */
 bool BasicConnectionHandler::setup_server_addr(int __family, std::string __host,
                                                uint32_t __port) {
-  Debug().info(
+  debug_i_console(
       "Called BasicConnectionHandler::setup_server_addr(...) function");
 
   this->server_addr->sin_family = __family;
-  Debug().info("Ended BasicConnectionHandler::setup_server_addr(...) function");
+  debug_i_console("Ended BasicConnectionHandler::setup_server_addr(...) function");
   this->server_addr->sin_addr.s_addr = inet_addr(__host.c_str());
   this->server_addr->sin_port = htons(__port);
 
@@ -93,7 +93,7 @@ bool BasicConnectionHandler::setup_server_addr(int __family, std::string __host,
  */
 bool BasicConnectionHandler::set_server_addr(
     struct sockaddr_in* new_serv_addr) {
-  Debug().info("Called BasicConnectionHandler::set_server_addr(...) function");
+  debug_i_console("Called BasicConnectionHandler::set_server_addr(...) function");
 
   this->server_addr = std::make_unique<struct sockaddr_in>(*new_serv_addr);
   return (bool)this->server_addr;
@@ -106,13 +106,13 @@ bool BasicConnectionHandler::set_server_addr(
  * @return true on connect success false on failure
  */
 bool Net::connect_to_host(const BasicConnectionHandler& basic_CH) {
-  Debug().info("Called BasicConnectionHandler::connect_to_host(...) function");
+  debug_i_console("Called BasicConnectionHandler::connect_to_host(...) function");
 
   int sockfd = basic_CH.get_sockfd();
 
   sockaddr_in_unq_ptr sockaddr =
       std::make_unique<struct sockaddr_in>(*basic_CH.get_sockaddr());
-  Debug().info(sockaddr->sin_addr.s_addr, sockaddr->sin_family,
+  debug_i_console(sockaddr->sin_addr.s_addr, sockaddr->sin_family,
                sockaddr->sin_port);
 
   int result = connect(sockfd, (SA*)(sockaddr.get()), sizeof(*sockaddr));

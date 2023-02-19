@@ -9,10 +9,10 @@ using namespace Net;
  * @param __port Port number to set connection
  */
 ClientModel::ClientModel() {
-  Debug().info("Created uninitialized client");
+  debug_i_console("Created uninitialized client");
   con_handler = std::make_shared<Net::BasicConnectionHandler>();
   comm_unit = std::make_shared<Net::BasicCommunicationModel>();
-  Debug().warning(comm_unit);
+  debug_w_console(comm_unit);
 }
 
 
@@ -24,12 +24,12 @@ void ClientModel::init_new_client(unsigned int __port, const std::string& host) 
   main_socket = con_handler->get_sockfd();
 
   if (!(sock_res & serv_res)) {
-    Debug().fatal("Failed to create socket. terminating...");
+    debug_f_console("Failed to create socket. terminating...");
     connection_state = 1;
   }
   int connect_result = connect_to_host(*con_handler.get());
   if (!connect_result) {
-    Debug().fatal("Failed to connect to host, ... terminating...");
+    debug_f_console("Failed to connect to host, ... terminating...");
     connection_state = 1;
   }
 
@@ -69,7 +69,7 @@ BasicCommunicationModelSharedPtr ClientModel::get_comm_unit() const noexcept {
 }
 
 int ClientModel::send_to_host(const DataTransfer::MessageModel& message) {
-  Debug().info("SOCKET : ", main_socket);
+  debug_i_console("SOCKET : ", main_socket);
   comm_unit->get_io_model()->send_message(message, con_handler->get_sockfd());
   return 0;
 }
@@ -106,4 +106,4 @@ int ClientModel::read_commands (const std::vector<std::string>& commands){
  * @brief Destroy the Client Model:: Client Model object
  *
  */
-ClientModel::~ClientModel() { Debug().info("Desctructed Client Model"); }
+ClientModel::~ClientModel() { debug_i_console("Desctructed Client Model"); }

@@ -45,7 +45,7 @@ vector<Server::ChatRoom_shrd_ptr>& Server::ChatRoomManager::push_new_room(
   chatroom_glob_lst[new_room->get_room_id()] = new_room_smrt_ptr;
 
   dump_customer_chatroom_state(master->get_unique_token());
-  Debug().info("Updated global rooms count : ", chatroom_glob_lst.size());
+  debug_i_console("Updated global rooms count : ", chatroom_glob_lst.size());
   return chatroom_lst[master->get_unique_token()];
 }
 
@@ -89,9 +89,8 @@ Server::ChatRoom_Map_Type& Server::ChatRoomManager::remove_all_rooms(
   }
 
   this->chatroom_lst.erase(master->get_unique_token());
-  Debug().info("deleted all rooms related to customer => ",
-               master->get_unique_token());
-  Debug().info("Global room count after delete => ", chatroom_glob_lst.size());
+  debug_i_console("deleted all rooms related to customer => ", master->get_unique_token());
+  debug_i_console("Global room count after delete => ", chatroom_glob_lst.size());
   return chatroom_lst;
 }
 
@@ -124,7 +123,7 @@ Server::ChatRoom_shrd_ptr Server::ChatRoomManager::get_room_global(
   try {
     return chatroom_glob_lst[room_id];
   } catch (const std::exception& e) {
-    Debug().fatal("No room with id ", room_id, "was found");
+    //debug_f_console("No room with id ", room_id, "was found");
   }
 }
 
@@ -132,11 +131,11 @@ void Server::ChatRoomManager::dump_customer_chatroom_state(
     const std::string& utoken) noexcept {
   auto chatrooms = this->operator[](utoken);
   uint32_t room_idx = 0;
-  Debug().raw("+==========+==============+");
-  Debug().raw("| Customer | ", utoken, " |");
-  Debug().raw("+==========+==============+");
+  //debug_r_console("+==========+==============+");
+  //debug_r_console("| Customer | ", utoken, " |");
+  //debug_r_console("+==========+==============+");
   for (const auto& room : chatrooms) {
-    Debug().raw("| Room ", room_idx++, " | ", room->get_room_id(), " |");
-    Debug().raw("+-------------------------+");
+    //debug_r_console("| Room ", room_idx++, " | ", room->get_room_id(), " |");
+    //debug_r_console("+-------------------------+");
   }
 }

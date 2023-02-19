@@ -76,9 +76,9 @@ void MessageModel::get_into(const string& key, ValType& into) const {
  */
 template <typename ValType>
 void MessageModel::set(const string& key, const ValType& value) {
-  // Debug().info("In void MessageModel::set ");
+  // debug_i_console("In void MessageModel::set ");
   this->m_message[key] = value;
-  // Debug().info("Out void MessageModel::set ");
+  // debug_i_console("Out void MessageModel::set ");
 }
 
 };      // namespace DataTransfer

@@ -3,50 +3,50 @@
 using namespace DataTransfer;
 
 ConnectRequest::ConnectRequest(const string& ip) {
-  Debug().info("Constructed ConnectRequest Message");
+  debug_i_console("Constructed ConnectRequest Message");
   this->set("command", this->command);
   this->set("ip", ip);
 }
 
 ConnectAccept::ConnectAccept(const string& unique_token) {
-  Debug().info("Constructed ConnectAccept Message");
+  debug_i_console("Constructed ConnectAccept Message");
   this->set("command", this->command);
   this->set("unique_token", unique_token);
 }
 
 ConnectCommand::ConnectCommand(const string& ip, const string& unique_token) {
-  Debug().info("Constructed ConnectCommand Message");
+  debug_i_console("Constructed ConnectCommand Message");
   this->set("command", command);
   this->set("ip", ip);
   this->set("unique_token", unique_token);
 }
 
 ConnectVerify::ConnectVerify(const string& unique_token) {
-  Debug().info("Constructed ConnectVerify Message");
+  debug_i_console("Constructed ConnectVerify Message");
   this->set("command", command);
   this->set("unique_token", unique_token);
 }
 
 LoginRequest::LoginRequest(const string& ip) {
-  Debug().info("Constructed LoginRequest Message");
+  debug_i_console("Constructed LoginRequest Message");
   this->set("command", command);
   this->set("ip", ip);
 }
 
 LoginAccept::LoginAccept(void) {
-  Debug().info("Constructed LoginAccept Message");
+  debug_i_console("Constructed LoginAccept Message");
   this->set("command", command);
 }
 
 LoginCommand::LoginCommand(const string& name, const string& password) {
-  Debug().info("Constructed LoginCommand Message");
+  debug_i_console("Constructed LoginCommand Message");
   this->set("command", command);
   this->set("name", name);
   this->set("passwd", password);
 }
 
 LoginVerify::LoginVerify(const string& unique_token) {
-  Debug().info("Constructed LoginVerify Message");
+  debug_i_console("Constructed LoginVerify Message");
   this->set("command", command);
   this->set("perm_uid", unique_token);
 }
@@ -54,7 +54,7 @@ LoginVerify::LoginVerify(const string& unique_token) {
 SignUpCommand::SignUpCommand(const string& ip, const string& name,
                              const string& dial, const string& email,
                              const string& passwd) {
-  Debug().info("Constructed SignUpCommand Message");
+  debug_i_console("Constructed SignUpCommand Message");
   this->set("command", command);
   this->set("ip", ip);
   this->set("name", name);
@@ -64,7 +64,7 @@ SignUpCommand::SignUpCommand(const string& ip, const string& name,
 }
 
 SignUpVerify::SignUpVerify(const string& unique_token) {
-  Debug().info("Constructed SignUpVerify Message");
+  debug_i_console("Constructed SignUpVerify Message");
   this->set("command", command);
   this->set("perm_uid", unique_token);
 }
@@ -72,7 +72,7 @@ SignUpVerify::SignUpVerify(const string& unique_token) {
 BroadcastMessage::BroadcastMessage(const string& message,
                                    const string& trigger_token,
                                    const string& room_id, const string& name) {
-  Debug().info("Constructed BroadcastMessage Message");
+  debug_i_console("Constructed BroadcastMessage Message");
   this->set("command", command);
   this->set("message", message);
   this->set("trg_token", trigger_token);
@@ -85,7 +85,7 @@ CreateChatroomCommand::CreateChatroomCommand(void){
 }
 
 CreateChatroomVerify::CreateChatroomVerify(const std::string& new_room_id) {
-  Debug().info("constructed CreateChatroomVerify");
+  debug_i_console("constructed CreateChatroomVerify");
 
   this->set("command", command);
   this->set("new_room_id", new_room_id);
@@ -109,7 +109,7 @@ ChatroomJoinedCustomer::ChatroomJoinedCustomer(const std::string& cust_id, const
 
 
 SafeMessageModel::SafeMessageModel(const std::string& crpt_hex, int crpt_len) {
-  Debug().info("constructed SafeMessageModel");
+  debug_i_console("constructed SafeMessageModel");
 
   this->set("safe", crpt_hex);
   this->set("safe_len", crpt_len);

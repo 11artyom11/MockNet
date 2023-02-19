@@ -14,7 +14,7 @@ Server::Handler::Handler(int RWBacklog)
 
 {
   chatroom_mngr_shrd_ptr = std::make_shared<Server::ChatRoomManager>();
-  Debug().info("Called handel ctor");
+  debug_i_console("Called handel ctor");
   sem_init(&writer_sem, 0, RWBacklog);
   sem_init(&reader_sem, 0, RWBacklog);
   commap_init();
@@ -27,7 +27,7 @@ as value , which will be implicitly called when according command was called
 derived from class type Server::Handler ptr type : int (Server::Handler::*)(int)
  */
 void Server::Handler::commap_init(void) {
-  Debug().info("Cted commap");
+  debug_i_console("Cted commap");
 
   commap[CONNECT_REQUEST] = &Server::Handler::on_connect_request_recieved;
   commap[LOG_IN_REQUEST] = &Server::Handler::on_login_request_recieved;
@@ -62,10 +62,10 @@ void* Server::Handler::writer(int sfd, uint32_t tid) {
 
   /*CRITICAL SECTION*/
 
-  Debug().info(writer_, "writer is inside\n");
+  debug_i_console(writer_, "writer is inside\n");
   this_thread::sleep_for(chrono::seconds(1));
-  Debug().info("Writer", writer_--, " is leaving");
-  Debug().info("Writers left : ", writer_);
+  debug_i_console("Writer", writer_--, " is leaving");
+  debug_i_console("Writers left : ", writer_);
   writer_threads[sfd].at(tid)->detach();
 
   /*CRITICAL SECTION*/
@@ -89,12 +89,12 @@ void* Server::Handler::reader(int sfd, uint32_t tid) {
 
   /*CRITICAL SECTION*/
 
-  Debug().info(reader_, "reader is inside\n");
+  debug_i_console(reader_, "reader is inside\n");
 
   this_thread::sleep_for(chrono::seconds(1));
 
-  Debug().info("Reader", reader_--, " is leaving");
-  Debug().info("Readers left : ", reader_);
+  debug_i_console("Reader", reader_--, " is leaving");
+  debug_i_console("Readers left : ", reader_);
 
   sem_post(&reader_sem);
   /*CRITICAL SECTION*/
@@ -145,8 +145,7 @@ int Server::Handler::on_connect_request_recieved(
   /*
       Check if server's ready to accept connection (new)
   */
-  Debug().info("Called Server::Handler::on_connect_request_recieved( ", sfd,
-               ")");
+  debug_i_console("Called Server::Handler::on_connect_request_recieved( ", sfd, ")");
   std::string new_unique_token = Server::random_str(10);
 
   this->recent_customers_sfd[sfd] = std::make_shared<Customer::CustomerModel>(
@@ -165,10 +164,10 @@ int Server::Handler::on_connect_request_recieved(
  */
 int Server::Handler::send_connect_accept(int sfd,
                                          const DataTransfer::MessageModel&) {
-  Debug().info("IN send_connect_accept()");
+  debug_i_console("IN send_connect_accept()");
   string new_unique_token = recent_customers_sfd[sfd]->get_unique_token();
 
-  Debug().warning(new_unique_token);
+  //debug_w_console(new_unique_token);
   /* Create new customer model and save in association with unqiue token and
    * sfd
    */
@@ -268,21 +267,21 @@ int Server::Handler::on_sign_up_command_recieved(
  * @return int
  */
 int Server::Handler::on_create_chatroom_command_recieved(int sfd, const DataTransfer::MessageModel& message) {
-  Debug().info("Got command create chatroom");
+  debug_i_console("Got command create chatroom");
   /*Create new chatroom*/
   RoomSpace::ChatRoom* new_room = new RoomSpace::ChatRoom(*recent_customers_sfd[sfd].get());
 
   chatroom_mngr_shrd_ptr->push_new_room(recent_customers_sfd[sfd].get(), new_room);
   /* Create chatroom_create_verify message to send to desired client */
   DataTransfer::CreateChatroomVerify createVerify(new_room->get_room_id(), new_room->get_master()->get_unique_token());
-  Debug().info("ROOM DATA\n", createVerify.to_str());
+  debug_i_console("ROOM DATA\n", createVerify.to_str());
 
   chatroom_create_verify(sfd, createVerify);
   return 0;
 }
 
 int Server::Handler::on_join_chatroom_command_recieved(int sfd, const DataTransfer::MessageModel& message) {
-  Debug().info("Called on_join_chatroom_command_recieved");
+  debug_i_console("Called on_join_chatroom_command_recieved");
   std::string room_id = message.get<std::string>("room_id");
   std::string master_token = message.get<std::string>("master_token");
   std::string secondary_token = message.get<std::string>("utoken");
@@ -290,7 +289,7 @@ int Server::Handler::on_join_chatroom_command_recieved(int sfd, const DataTransf
   auto chatroom = chatroom_mngr_shrd_ptr->get_room_by_id(master_token, room_id);
 
   chatroom->add_new_secondary_customer(*recent_customers_sfd[sfd].get());
-  Debug().info("ChatRoom ID => ", chatroom->get_room_id());
+  debug_i_console("ChatRoom ID => ", chatroom->get_room_id());
   
   DataTransfer::ChatroomJoinedCustomer joined_message(secondary_token, master_token, room_id);
   chatroom->get_master()->send_message(joined_message);
@@ -310,7 +309,7 @@ int Server::Handler::on_join_chatroom_command_recieved(int sfd, const DataTransf
  * @return int
  */
 int Server::Handler::on_broadcast_message_command_recieved(int sfd, const DataTransfer::MessageModel& message) {
-  Debug().info("Server::on_broadcast_message_command_recieved function Called");
+  debug_i_console("Server::on_broadcast_message_command_recieved function Called");
   std::string room_id = message.get<std::string>("room_id");
   std::string utoken = message.get<std::string>("utoken");
   Server::ChatRoom_shrd_ptr chatroom = chatroom_mngr_shrd_ptr->get_room_global(room_id);
@@ -357,7 +356,7 @@ int Server::Handler::send_login_verify(int sfd, const DataTransfer::MessageModel
 int Server::Handler::chatroom_create_verify(int sfd, const DataTransfer::MessageModel& message) {
   auto customer = recent_customers_sfd[sfd];
   if (customer == CustomerModel_ptr(nullptr)) {
-    Debug().fatal("customer not found");
+    //debug_f_console("customer not found");
     return -1;
   }
   customer->send_message(message);
@@ -372,7 +371,7 @@ int Server::Handler::chatroom_create_verify(int sfd, const DataTransfer::Message
  */
 int Server::Handler::provide_write_thread(int new_write_socket,
                                           const DataTransfer::MessageModel&) {
-  Debug().info("WRITE THREAD");
+  debug_i_console("WRITE THREAD");
   /*Index of newly created thread to be passing to writer function*/
   int tid = writer_threads[new_write_socket].size();
 
@@ -425,7 +424,7 @@ int Server::Handler::provide_read_thread(int new_read_socket,
  * @return close success code
  */
 int Server::Handler::terminate_socket(int sfd, const DataTransfer::MessageModel& message) {
-  Debug().info("Connection terminated");
+  debug_i_console("Connection terminated");
   chatroom_mngr_shrd_ptr->remove_all_rooms(recent_customers_sfd[sfd].get());
   delete_recent_customer(sfd, "NULL");
   if (close(sfd) == 0) {
@@ -495,7 +494,7 @@ int Server::Handler::cleanup_writer_thread_for_socket(int sfd) {
 decltype(&Server::Handler::provide_write_thread) Server::Handler::get_command(
     std::string command) {
   try {
-    Debug().info("SIZE : ", commap.size());
+    debug_i_console("SIZE : ", commap.size());
     return commap.at(command);
   } catch (const std::exception& e) {
     std::cerr << e.what() << '\n';
@@ -527,11 +526,11 @@ int Server::Handler::find_in_customer_cache(int sfd) {
 
 void Server::Handler::dump_all_customers (void) const {
   int idx = 0;
-  Debug().info ("------------------------------");
+  //debug_i_console("------------------------------");
   for (auto customer_it : recent_customers_sfd){
-      Debug().raw (idx, " -> ", customer_it.second->get_unique_token());
+      //debug_r_console (idx, " -> ", customer_it.second->get_unique_token());
   } 
-  Debug().info ("------------------------------");
+  //debug_i_console("------------------------------");
 }
 
 /**
@@ -590,7 +589,7 @@ void Server::Handler::delete_recent_customer(int sfd, const string& utoken) {
   dump_all_customers();
   recent_customers.erase(token);
   recent_customers_sfd.erase(sfd);
-  Debug().info("Succcessfully deleted recently customer");
+  debug_i_console("Succcessfully deleted recently customer");
   return;
 }
 
@@ -609,7 +608,7 @@ Server::CustomerCacheMapSfdType Server::Handler::get_sfd_map_customers(void) {
  *
  */
 Server::Handler::~Handler() {
-  Debug().info("HANDLER DESTRUCTED");
+  debug_i_console("HANDLER DESTRUCTED");
   for (const auto& sfd : alive_writer_sockets) {
     cleanup_socket_garbage(sfd);
   }
